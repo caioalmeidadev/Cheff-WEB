@@ -5,8 +5,9 @@ import { FuncionariosRepository } from "../repositories/funcionarios.repository"
 import { GetFuncionarioPorIdUsecase } from "../usecases/get-funcionario-por-id.usecase";
 
 class FuncionariosController {
+  constructor(private funcionariosRepository: FuncionariosRepository) { }
   listar = async (request: Request, response: Response) => {
-    const useCase = new ListarFuncionariosUsecase(new FuncionariosRepository());
+    const useCase = new ListarFuncionariosUsecase(this.funcionariosRepository);
 
     const atendentes = await useCase.execute();
 
@@ -23,7 +24,7 @@ class FuncionariosController {
     const { id } = request.params;
 
     const useCase = new GetFuncionarioPorIdUsecase(
-      new FuncionariosRepository()
+      this.funcionariosRepository
     );
 
     const atendente = await useCase.execute({ id });
@@ -36,4 +37,4 @@ class FuncionariosController {
   };
 }
 
-export default new FuncionariosController();
+export default new FuncionariosController(new FuncionariosRepository());

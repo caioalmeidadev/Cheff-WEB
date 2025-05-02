@@ -15,4 +15,11 @@ export class ProdutoRepository {
       [id]
     );
   };
+
+  RecordCount = async () => await executeQuery("select count(codigo) from c000025 where situacao = 0", [])
+
+  listarCategorias = async () => {
+    return await executeQuery("select codigo,grupo from c000017", []);
+  }
+
 }

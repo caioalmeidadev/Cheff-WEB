@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import ProdutoModel from "../model/Produto/Model";
 import { GetAllProductsUseCase } from "../usecases/ProdutoUseCases/get-all-products.usecase";
 import { ProdutoRepository } from "../repositories/produto.repository";
 import { GetByIdProductUseCase } from "../usecases/ProdutoUseCases/get-by-id-product.usecase";
+import { GetCategoriesUseCase } from "../usecases/ProdutoUseCases/get-categories.usecase";
 
 class ProdutoController {
   listar = async (request: Request, response: Response) => {
@@ -20,11 +20,11 @@ class ProdutoController {
         .send({ error: "Não há produtos cadastrados" });
     }
 
-    const totalRecords = await ProdutoModel.tamanho();
+    const totalRecords = produtos.length
 
     return response
       .status(200)
-      .send({ produtos, totalRecords: totalRecords[0].count });
+      .send({ produtos, totalRecords: totalRecords });
   };
 
   pesquisaPorId = async (request: Request, response: Response) => {
@@ -38,6 +38,19 @@ class ProdutoController {
       return response.status(400).send({ error: "Produto não encontrado" });
     }
     return response.status(200).send({ produto });
+  };
+
+  listarCategorias = async (request: Request, response: Response) => {
+    const useCase = new GetCategoriesUseCase(new ProdutoRepository());
+    const categorias = await useCase.execute();
+
+    if (!categorias) {
+      return response
+        .status(400)
+        .send({ error: "Não há categorias cadastradas" });
+    }
+
+    return response.status(200).send({ categorias });
   };
 }
 

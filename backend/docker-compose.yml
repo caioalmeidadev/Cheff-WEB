@@ -1,0 +1,8 @@
+services:
+  firebird:
+    image: jacobalberty/firebird:v2.5.9-ss
+    restart: always
+    ports:
+      - "3050:3050"
+    volumes:
+      - ./db/data:/firebird/data

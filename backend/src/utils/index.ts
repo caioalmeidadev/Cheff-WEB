@@ -1,0 +1,1 @@
+export const addZeroes = (num:string, len:number)=>  num.padStart(len,'0').trim()

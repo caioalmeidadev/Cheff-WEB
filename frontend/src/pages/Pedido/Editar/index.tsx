@@ -37,12 +37,11 @@ export default function ComandaProdutoEditar() {
     },
   })
   async function loadProduto(codigo: string, codMesa: string) {
-    const response = await api.get(`/comanda/${codMesa}/editar/${codigo}`, {
-      auth: { username: user.codFuncionario, password: user.senha },
-    })
+    const response = await api.get(`/comandas/${codMesa}/editar/${codigo}`)
+
     if (response.data) {
-      form.setValue('codigo', response.data.codProduto)
-      form.setValue('descricao', response.data.produto)
+      form.setValue('codigo', response.data.cod_produto)
+      form.setValue('descricao', response.data.descricao)
       form.setValue(
         'complemento',
         response.data.complemento ? response.data.complemento : '',
@@ -54,10 +53,10 @@ export default function ComandaProdutoEditar() {
   }
 
   useEffect(() => {
-    if (codigo) {
+    if (codigo && codMesa) {
       loadProduto(codigo, codMesa!)
     }
-  }, [codigo])
+  }, [codMesa, codigo])
 
   const handleFormSubmit = async (data: pedidoFormDataType) => {
     try {

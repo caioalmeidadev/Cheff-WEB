@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -23,57 +23,35 @@ import api from '@/services/api.ts'
 import { useToast } from '@/components/ui/use-toast'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Search } from '@/components/Search'
-import { useAuth } from '@/context/AuthContext'
+import { TProduto } from '@/@shared/produto'
 
 export default function ComandaProdutoAdicionar() {
   const { codMesa } = useParams()
-  const { user } = useAuth()
   const navigate = useNavigate()
   const { toast } = useToast()
 
   const form = useForm<pedidoFormDataType>({
     resolver: zodResolver(pedidoFormSchema),
     defaultValues: {
+      codigo: '',
+      descricao: '',
+      complemento: '',
+      val_unitario: 0,
+      val_total: 0,
       qtde: 1,
     },
   })
 
-  async function SearchProduto() {
-    if (Number(form.getValues('codigo')) > 0) {
-      const np = form.getValues('codigo').padStart(6, '0')
-      const result = await api.get(`/produtos/${np}`)
-
-      const produto = result.data.produto[0]
-      if (produto) {
-        form.setValue('descricao', produto.produto)
-        form.setValue('qtde', 1)
-        form.setValue('val_unitario', produto.precovenda)
-        form.setValue('val_total', produto.precovenda)
-        form.setFocus('qtde')
-      }
-    }
-  }
-
-  const codProduto = form.watch('codigo')
-
-  useEffect(() => {
-    if (codProduto) {
-      ;(async () => await SearchProduto())()
-    }
-  }, [codProduto])
-
   const handleFormSubmit = async (data: pedidoFormDataType) => {
     try {
       const newProduto = {
-        codProduto: data.codigo,
+        cod_produto: data.codigo,
         complemento: data.complemento,
         qtde: data.qtde,
         valUnitario: data.val_unitario,
         valTotal: data.val_total,
       }
-      await api.post(`/comandas/${codMesa}`, newProduto, {
-        auth: { username: user.codFuncionario, password: user.senha },
-      })
+      await api.post(`/comandas/${codMesa}`, newProduto)
       toast({
         variant: 'default',
         title: 'Sucesso',
@@ -102,8 +80,13 @@ export default function ComandaProdutoAdicionar() {
       form.setValue('val_total', total)
     }
   }, [])
-  function handeSelectedValue(codItem: string) {
-    form.setValue('codigo', codItem)
+  function handeSelectedValue(item: TProduto) {
+    form.setValue('codigo', item.codigo)
+    form.setValue('descricao', item.produto)
+    form.setValue('val_unitario', item.precovenda)
+    form.setValue('val_total', item.precovenda)
+    form.setValue('qtde', 1)
+    form.setValue('complemento', '')
   }
 
   return (

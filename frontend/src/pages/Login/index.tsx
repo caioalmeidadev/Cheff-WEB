@@ -50,10 +50,7 @@ export default function Login() {
             value={connectionString}
             onChange={(e) => saveConnectionString(e.target.value)}
           />
-          <Button
-            onClick={() => handleValidConnection()}
-            disabled={connectionString.length > 0}
-          >
+          <Button onClick={() => handleValidConnection()}>
             Validar Conexão
           </Button>
         </div>

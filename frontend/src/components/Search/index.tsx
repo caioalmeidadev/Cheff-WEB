@@ -8,51 +8,40 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { useQuery } from 'react-query'
 import api from '@/services/api.ts'
 import { Button } from '../ui/button'
 import { SearchIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Card, CardContent } from '../ui/card'
-import { useAuth } from '@/context/AuthContext'
+import { useQuery } from '@tanstack/react-query'
+import { currencyFormat } from '@/lib/format-number'
+import { TProduto } from '@/@shared/produto'
 
 type SearchPageProps = {
-  onSelectedValue: (codigo: string) => void
-}
-
-interface ListItemDetailsProps {
-  codigo: string
-  codbarra: string
-  produto: string
-  unidade: number
-  precovenda: number
+  onSelectedValue: (item: TProduto) => void
 }
 
 export function Search({ onSelectedValue }: SearchPageProps) {
-  const { user } = useAuth()
   const [open, setOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
   const [pages, setPages] = useState(1)
 
-  const { data: produtos, refetch } = useQuery(
-    `/produtos`,
-    async () => {
-      const response = await api.get(`/produtos?page=${page}&limit=${limit}`, {
-        auth: { username: user.codFuncionario, password: user.senha },
-      })
-
+  const { data: produtos } = useQuery({
+    queryKey: [`produtos-search`],
+    queryFn: async () => {
+      const response = await api.get(`/produtos?page=${page}&limit=${limit}`)
       return response.data.produtos
     },
-    { enabled: open },
-  )
+    enabled: open,
+  })
 
   const handleCancel = () => {
     setPage(1)
   }
 
-  const handleSelection = (codigoItem: string) => {
-    onSelectedValue(codigoItem)
+  const handleSelection = (item: TProduto) => {
+    onSelectedValue(item)
     setPage(1)
     setOpen(false)
   }
@@ -63,10 +52,6 @@ export function Search({ onSelectedValue }: SearchPageProps) {
   function handlePrevPage() {
     setPage(page - 1)
   }
-
-  useEffect(() => {
-    ;(async () => refetch())()
-  }, [page, limit, refetch])
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -84,10 +69,10 @@ export function Search({ onSelectedValue }: SearchPageProps) {
         </AlertDialogHeader>
         <div className=" flex flex-col gap-2 overflow-auto">
           {produtos &&
-            produtos.map((item: ListItemDetailsProps) => (
+            produtos.map((item: TProduto) => (
               <Card
                 key={item.codigo}
-                onClick={() => handleSelection(item.codigo)}
+                onClick={() => handleSelection(item)}
                 className="bg-primary text-muted"
               >
                 <CardContent className="mt-4">
@@ -101,10 +86,7 @@ export function Search({ onSelectedValue }: SearchPageProps) {
                   <div className="flex items-center justify-around">
                     <div className="text-xs">{item.unidade}</div>
                     <div className="text-sm font-medium">
-                      {new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
-                      }).format(item.precovenda)}
+                      {currencyFormat(item.precovenda)}
                     </div>
                   </div>
                 </CardContent>

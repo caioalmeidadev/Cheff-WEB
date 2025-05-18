@@ -50,10 +50,10 @@ export function AuthContextProvider({
   async function login(codigo: string, senha: string) {
     try {
       const response = await api.post('/login', {
-        user: codigo.padStart(6, '0'),
-        pass: senha,
+        usuario: codigo.padStart(6, '0'),
+        senha,
       })
-
+      console.log(response.data)
       if (response.data) {
         const registredUser = response.data.usuario
         localStorage.setItem(
@@ -70,11 +70,11 @@ export function AuthContextProvider({
 
         api.interceptors.request.use(
           (config) => {
-            if (response.data) {
-              config.auth = {
-                username: registredUser.codigo,
-                password: registredUser.senha,
-              }
+            if (user) {
+              config.headers.Authorization = JSON.stringify({
+                codigo: user.codFuncionario,
+                senha: user.senha,
+              })
             }
 
             return config
@@ -85,6 +85,7 @@ export function AuthContextProvider({
         )
       }
     } catch (err) {
+      console.error(err)
       throw new Error('Erro ao realizar login')
     }
   }

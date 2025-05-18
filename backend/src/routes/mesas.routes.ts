@@ -1,16 +1,8 @@
 import { Router } from "express";
-import MesaModel from '../model/Mesa/Model.js';
+import mesaController from "../controllers/mesa.controller";
 
 const mesasRouter = Router();
 
-mesasRouter.get('/',async (request,response) =>{
-  const mesas = await MesaModel.listar()
-  
-  if(!mesas){
-    return response.status(400).send({error: 'Não há clientes cadastrados'})
-  }
-
-  return response.status(200).send({mesas});
-})
+mesasRouter.get('/', mesaController.getMesas)
 
 export default mesasRouter;

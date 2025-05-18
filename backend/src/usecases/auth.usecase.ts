@@ -13,13 +13,13 @@ interface AuthUseCaseResponse {
 }
 
 export class AuthUseCase {
-  private authRepository: typeof AuthRepository;
 
-  constructor(authRepository: typeof AuthRepository) {
-    this.authRepository = authRepository;
+
+  constructor(private authRepository: typeof AuthRepository) {
   }
 
   async execute(request: AuthUseCaseRequest): Promise<AuthUseCaseResponse> {
+    console.log(request);
     const user = await this.authRepository.findByUser(
       request.usuario,
       request.senha
@@ -32,7 +32,7 @@ export class AuthUseCase {
     return {
       codigo: user.codigo,
       nome: user.nome,
-      senha: user.senha,
+      senha: user.senha_app,
       dataRegristro: new Date(),
     };
   }

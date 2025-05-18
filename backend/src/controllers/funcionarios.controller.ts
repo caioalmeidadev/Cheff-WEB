@@ -1,5 +1,4 @@
-import { Request, Response, NextFunction } from "express";
-import { executeQuery } from "../config/database";
+import { Request, Response } from "express";
 import { ListarFuncionariosUsecase } from "../usecases/listar-funcionarios.usecase";
 import { FuncionariosRepository } from "../repositories/funcionarios.repository";
 import { GetFuncionarioPorIdUsecase } from "../usecases/get-funcionario-por-id.usecase";

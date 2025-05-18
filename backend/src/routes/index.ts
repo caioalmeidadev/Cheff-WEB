@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { checkAuth } from "../middlewares/auth";
+import { AuthMiddleware } from "../middlewares/auth";
 import clientesRouter from "./clientes.routes";
 import comandaRouter from "./comanda.routes";
 import produtoRouter from "./produtos.routes";
@@ -19,13 +19,11 @@ routes.get("/", (req, res) =>
     <p>Serviço rodando na porta ${env.SERVER_PORT}. </p>
     <p>Banco de dados: ${env.DB_PATH}</p>
     <p>Host do banco: ${env.DB_HOST}</p>
-    
-    
 </div>
 `)
 );
 routes.use("/", authRouter);
-routes.use(checkAuth);
+routes.use(AuthMiddleware);
 routes.use("/funcionarios", funcionariosRouter);
 routes.use("/comandas", comandaRouter);
 routes.use("/produtos", produtoRouter);

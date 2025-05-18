@@ -1,8 +1,15 @@
 services:
   firebird:
-    image: jacobalberty/firebird:v2.5.9-ss
+    image: firebirdsql/firebird:3.0.12
+    container_name: firebird
     restart: always
+    environment:
+      - FIREBIRD_ROOT_PASSWORD=masterkey
+      - FIREBIRD_USER=sysdba
+      - FIREBIRD_PASSWORD=masterkey
+      - FIREBIRD_DATABASE_DEFAULT_CHARSET=UTF8
+      - FIREBIRD_USE_LEGACY_AUTH=true
     ports:
       - "3050:3050"
     volumes:
-      - ./db/data:/firebird/data
+      - ./db/data:/var/lib/firebird/data
